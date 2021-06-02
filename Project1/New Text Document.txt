@@ -1,0 +1,214 @@
+#include<iostream>
+#include<conio.h>
+#include<fstream>
+#include<time.h>
+#include<windows.h>
+using namespace std;
+
+
+const int FEATURES = 4;
+const int SIZE = 150;
+
+void setColor(unsigned short color)
+{
+	// SET THE COLOR ON CONSLOLE FOR GOOD INTERFACE
+	//SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+}
+double	COST(double PredictedValues[], int ActualValues[],int size)
+{
+	double cost = 0;
+	for (int i = 0; i < size; i++)
+	{
+		cost = cost + (PredictedValues[i] - ActualValues[i])*(PredictedValues[i] - ActualValues[i]);
+	}
+	cost = cost / SIZE;
+	return cost;
+}
+void	POPULATE(double DATA_SET[][FEATURES],int LABEL[SIZE])
+{
+	ifstream fin;
+	fin.open("DATA.txt");
+
+	for (int i = 0; i < SIZE; i++)
+	{
+		for (int j = 0; j < FEATURES; j++)
+		{
+			fin >> DATA_SET[i][j];
+		}
+
+		if (i <= 49)
+			LABEL[i] = 1;
+		if (i > 49 && i <= 99)
+			LABEL[i] = 2;
+		if (i > 99 && i <= 149)
+			LABEL[i] = 3;
+	}
+
+}
+void	PRINT(double DATA_SET[][FEATURES], int LABEL[SIZE],int size)
+{
+	for (int i = 0; i < size; i++)
+	{
+		cout << i + 1 << "	";
+		for (int j = 0; j < FEATURES; j++)
+		{
+			cout  << DATA_SET[i][j] << "	"; 
+		}
+
+		cout << LABEL[i] << endl;
+	}
+
+}
+void	PREPARE_DATA(double DATA_SET[][FEATURES],int LABEL[SIZE],double TRAING_DATA[][FEATURES], int TRAINING_LABEL[SIZE/2], double TESTING_DATA[][FEATURES], int TESTING_LABEL[SIZE/2])
+{
+	for (int i = 0; i < SIZE / 2; i++)
+	{
+		for (int j = 0; j < FEATURES; j++)
+		{
+			TRAING_DATA[i][j] = DATA_SET[i][j];
+		}
+		TRAINING_LABEL[i] = LABEL[i];
+	}
+
+
+	int x = 0, y = 0;
+
+	for (int i = SIZE / 2; i < SIZE; i++)
+	{
+		for (int j = 0; j < FEATURES; j++)
+		{
+			TESTING_DATA[x][y] = DATA_SET[i][j];
+			y++;
+		}
+		y = 0;
+		TESTING_LABEL[x] = LABEL[i];
+		x++;
+	}
+}
+void	RANDOMIZED(double DATA_SET[][FEATURES], int LABEL[])
+{
+	srand(time(0));
+
+	int data1;
+	int data2;
+
+	for (int j = 0; j < SIZE; j++) {
+
+		data1 = rand() % (SIZE);
+		data2 = rand() % (SIZE);
+
+
+		for (int i = 0; i < FEATURES; i++)
+			swap(DATA_SET[data1][i], DATA_SET[data2][i]);
+
+		swap(LABEL[data1], LABEL[data2]);
+
+	}
+}
+void	GRADIENT_DESCENT(double DATA_SET[][FEATURES], int Y[], double Y_[],double W[FEATURES+1])
+{
+	srand(time(0));
+
+	W[0] = (double)rand() / ((double)RAND_MAX / 1);
+	W[1] = (double)rand() / ((double)RAND_MAX / 1);
+	W[2] = (double)rand() / ((double)RAND_MAX / 1);
+	W[3] = (double)rand() / ((double)RAND_MAX / 1);
+	W[4] = (double)rand() / ((double)RAND_MAX / 1);
+
+	for (int i = 0; i < SIZE / 2; i++)
+	{
+		Y_[i] = W[0] * 1 + W[1] * DATA_SET[i][0] + W[2] * DATA_SET[i][1] + W[3] * DATA_SET[i][2] + W[4] * DATA_SET[i][3];
+		cout << Y_[i] << endl;
+	}
+
+	double Cost = COST(Y_, Y, SIZE / 2);
+
+	cout <<"INITIAL COST : "<< Cost<<endl;
+	cout<<"WEIGHT VECTOR : "<< W[0] << " " << W[1] << " " << W[2] << " " << W[3] <<" "<<W[4]<< endl;
+	
+	int ITERATION_COUNT = 0;
+
+	int COUNTER = 0;
+
+	while (Cost != 0 && ITERATION_COUNT <= 1000)
+	{
+		double YY0=0.0;
+		double YY1=0.0;
+		double YY2=0.0;
+		double YY3=0.0;
+		double YY4=0.0;
+
+		for (int i = 0; i < SIZE / 2; i++)
+		{
+			YY0 = YY0 + (Y[i] - Y_[i])	* 1;
+			YY1 = YY1 + (Y[i] - Y_[i])	* DATA_SET[i][0];
+			YY2 = YY2 + (Y[i] - Y_[i])	* DATA_SET[i][1];
+			YY3 = YY3 + (Y[i] - Y_[i])	* DATA_SET[i][2];
+			YY4 = YY4 + (Y[i] - Y_[i])	* DATA_SET[i][3];
+		}
+
+		W[0] = W[0] - (0.01)*(-1)*(YY0)/SIZE;
+		W[1] = W[1] - (0.01)*(-1)*(YY1)/SIZE;
+		W[2] = W[2] - (0.01)*(-1)*(YY2)/SIZE;
+		W[3] = W[3] - (0.01)*(-1)*(YY3)/SIZE;
+		W[4] = W[4] - (0.01)*(-1)*(YY4)/SIZE;
+
+
+		for (int i = 0; i < SIZE / 2; i++)
+		{
+			Y_[i] = W[0] * 1 + W[1] * DATA_SET[i][0] + W[2] * DATA_SET[i][1] + W[3] * DATA_SET[i][2] + W[4] * DATA_SET[i][3];
+			
+			
+		}
+		
+
+		Cost = COST(Y_, Y, SIZE / 2);
+
+		COUNTER++;
+		if (COUNTER == 100)
+		{
+			COUNTER = 0;
+			cout << "NEW COST : " << Cost << endl;
+			cout << "NEW WEIGHT VECTOR : " << W[0] << " " << W[1] << " " << W[2] << " " << W[3] << endl; _getch();
+
+		}
+		
+		ITERATION_COUNT++;
+
+	}
+}
+int main()
+{
+
+	double	DATA_SET[SIZE][FEATURES];
+	int		LABEL[SIZE];
+
+	POPULATE(DATA_SET, LABEL);
+    
+	double	TRAINING_DATA[SIZE / 2][FEATURES];
+	int		TRAINING_LABEL[SIZE / 2];
+
+	double	TESTING_DATA[SIZE / 2][FEATURES];
+	int		TESTING_LABEL[SIZE / 2];
+
+	RANDOMIZED(DATA_SET, LABEL);
+
+	// RANDOMIZED THE DATA
+	PREPARE_DATA(DATA_SET, LABEL, TRAINING_DATA, TRAINING_LABEL, TESTING_DATA, TESTING_LABEL);
+
+	cout << ">>>RANDOMIZED DATA\n";
+	PRINT(TRAINING_DATA, TRAINING_LABEL, SIZE / 2);
+
+	double		Y_[SIZE/2];				//GUESS
+	double		W[FEATURES + 1];		//WEIGHT VECTOR
+
+	GRADIENT_DESCENT(TRAINING_DATA, TRAINING_LABEL, Y_, W);
+
+	for (int i = 0; i < SIZE / 2; i++)
+		cout << Y_[i] << "\n";
+
+	for (int i = 0; i <= FEATURES; i++)
+		cout << W[i] << " ";
+	_getch();
+
+}

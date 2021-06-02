@@ -1,0 +1,7 @@
+﻿  Source.cpp
+c:\users\ali haider\desktop\project1\project1\header.h(192): warning C4244: '=': conversion from 'SHORT' to 'char', possible loss of data
+c:\users\ali haider\desktop\project1\project1\header.h(198): warning C4244: '=': conversion from 'SHORT' to 'char', possible loss of data
+c:\users\ali haider\desktop\project1\project1\header.h(206): warning C4244: '=': conversion from 'SHORT' to 'char', possible loss of data
+c:\users\ali haider\desktop\project1\project1\header.h(213): warning C4244: '=': conversion from 'SHORT' to 'char', possible loss of data
+c:\users\ali haider\desktop\project1\project1\source.cpp(238): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Project1.vcxproj -> C:\Users\ali haider\Desktop\Project1\Debug\Project1.exe
